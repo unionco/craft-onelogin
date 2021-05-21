@@ -1,0 +1,122 @@
+{% extends "onelogin/_layouts/settings" %}
+
+{% import "_includes/forms" as forms %}
+
+{% set selectedTab = 'settings' %}
+
+
+{% block content %}
+
+    {% set saml = settings.samlSettings %}
+    <h2>{{ "SAML Configuration"|t('onelogin') }}</h2>
+
+    <form action="" method="post" accept-charset="UTF-8" data-saveshortcut>
+        {{ actionInput('onelogin/settings/save-settings') }}
+        {{ redirectInput('onelogin/settings/saml') }}
+        {{ csrfInput() }}
+        {{ hiddenInput('page', 'saml') }}
+
+        <h3>Common</h3>
+        {{ forms.autosuggestField({
+            name: 'baseUrl',
+            id: 'baseUrl',
+            suggestEnvVars: true,
+            value: saml.baseUrl,
+            label: 'Base URL',
+            instructions: 'URL'
+        }) }}
+        <hr/>
+        <h3>Service Provider (SP)</h3>
+        {{ forms.autosuggestField({
+            name: 'spEntityId',
+            id: 'spEntityId',
+            suggestEnvVars: true,
+            value: saml.spEntityId,
+            label: 'Entity ID',
+            instructions: 'URL'
+        }) }}
+
+        {{ forms.autosuggestField({
+            name: 'spAcsUrl',
+            id: 'spAcsUrl',
+            suggestEnvVars: true,
+            value: saml.spAcsUrl,
+            label: 'Assertion Consumer Service URL',
+            instructions: 'URL'
+        }) }}
+
+        {{ forms.autosuggestField({
+            name: 'spSloUrl',
+            id: 'spSloUrl',
+            suggestEnvVars: true,
+            value: saml.spSloUrl,
+            label: 'Single Logout (SLO) URL',
+            instructions: 'URL'
+        }) }}
+        <hr/>
+        <h3>Identity Provider (IdP)</h3>
+        {{ forms.autosuggestField({
+            name: 'idpEntityId',
+            id: 'idpEntityId',
+            suggestEnvVars: true,
+            value: saml.idpEntityId,
+            label: 'Entity ID',
+            instructions: 'URL'
+        }) }}
+
+        {{ forms.autosuggestField({
+            name: 'idpSsoUrl',
+            id: 'idpSsoUrl',
+            suggestEnvVars: true,
+            value: saml.idpSsoUrl,
+            label: 'SSO URL',
+            instructions: 'URL'
+        }) }}
+
+        {{ forms.autosuggestField({
+            name: 'idpSloUrl',
+            id: 'idpSloUrl',
+            suggestEnvVars: true,
+            value: saml.idpSloUrl,
+            label: 'Single Logout URL',
+            instructions: 'URL'
+        }) }}
+
+        {{ forms.autosuggestField({
+            name: 'idpX509Cert',
+            id: 'idpX509Cert',
+            suggestEnvVars: true,
+            value: saml.idpX509Cert,
+            label: 'X.509 Certificate',
+            instructions: 'File path or actual cert contents'
+        }) }}
+        {# {{ forms.autosuggestField({
+                    name: 'clientSecret',
+                    id: 'clientSecret',
+                    value: settings.clientSecret,
+                    suggestEnvVars: true,
+                    label: 'OneLogin Client Secret',
+                    instructions: 'API Client Secret'
+                }) }}
+        
+                {{ forms.autosuggestField({
+                    name: 'region',
+                    id: 'region',
+                    value: settings.region,
+                    suggestEnvVars: true,
+                    label: 'Region',
+                    instructions: 'Two-character region code, defaults to `us`'
+                }) }}
+        
+                {{ forms.autosuggestField({
+                    name: 'maxResults',
+                    id: 'maxResults',
+                    value: settings.maxResults,
+                    suggestEnvVars: true,
+                    label: 'Max Results',
+                    instructions: 'Max number of results, defaults to 1,000'
+                }) }} #}
+
+        <input type="submit" class="btn submit" value="{{ 'Save'|t('commerce') }}">
+    </form>
+{% endblock %}

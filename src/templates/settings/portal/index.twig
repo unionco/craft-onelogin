@@ -1,0 +1,26 @@
+
+ {% extends "onelogin/_layouts/settings" %}
+
+{% import "_includes/forms" as forms %}
+
+{% block content %}
+    <h2>{{ "Single Sign-On (SSO) Portal App Configuration"|t('onelogin') }}</h2>
+
+    <form action="" method="post" accept-charset="UTF-8" data-saveshortcut>
+        {{ csrfInput() }}
+        {{ actionInput('onelogin/settings/save-settings') }}
+        {{ redirectInput('onelogin/settings/portal') }}
+        {{ hiddenInput('page', 'portal') }}
+ 
+        {{ forms.autosuggestField({
+            name: 'ssoPortalUrl',
+            id: 'ssoPortalUrl',
+            value: settings.ssoPortalUrl,
+            suggestEnvVars: true,
+            label: 'SSO Portal URL',
+            instructions: 'URL for the SSO login app'
+        }) }}
+
+        <input type="submit" class="btn submit" value="{{ 'Save'|t('commerce') }}">
+    </form>
+{% endblock %}

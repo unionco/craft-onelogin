@@ -1,0 +1,31 @@
+{
+  "name": "unionco/craft-onelogin",
+  "description": "OneLogin integration for CMS authentication",
+  "type": "craft-plugin",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Union",
+      "homepage": "https://union.co"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "craftcms/cms": "^3.2.0",
+    "onelogin/api": "^1.6",
+    "onelogin/php-saml": "^3||^4"
+  },
+  "autoload": {
+    "psr-4": {
+      "unionco\\onelogin\\": "src/"
+    }
+  },
+  "require-dev": {
+    "vimeo/psalm": "^3.0"
+  },
+  "extra": {
+    "name": "OneLogin",
+    "handle": "onelogin",
+    "class": "unionco\\onelogin\\OneLogin"
+  }
+}

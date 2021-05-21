@@ -1,0 +1,53 @@
+
+ {% extends "onelogin/_layouts/settings" %}
+
+{% import "_includes/forms" as forms %}
+
+{% block content %}
+    <h2>{{ "OneLogin Credential Configuration"|t('onelogin') }}</h2>
+
+    <form action="" method="post" accept-charset="UTF-8" data-saveshortcut>
+        {{ csrfInput() }}
+        {{ actionInput('onelogin/settings/save-settings') }}
+        {{ redirectInput('onelogin/settings/portal') }}
+        {{ hiddenInput('page', 'onelogin') }}
+
+        {{ forms.autosuggestField({
+            name: 'clientId',
+            id: 'clientId',
+            suggestEnvVars: true,
+            value: settings.clientId,
+            label: 'OneLogin Client ID',
+            instructions: 'API Client ID'
+        }) }}
+
+        {{ forms.autosuggestField({
+            name: 'clientSecret',
+            id: 'clientSecret',
+            value: settings.clientSecret,
+            suggestEnvVars: true,
+            label: 'OneLogin Client Secret',
+            instructions: 'API Client Secret'
+        }) }}
+
+        {{ forms.autosuggestField({
+            name: 'region',
+            id: 'region',
+            value: settings.region,
+            suggestEnvVars: true,
+            label: 'Region',
+            instructions: 'Two-character region code, defaults to `us`'
+        }) }}
+
+        {{ forms.autosuggestField({
+            name: 'maxResults',
+            id: 'maxResults',
+            value: settings.maxResults,
+            suggestEnvVars: true,
+            label: 'Max Results',
+            instructions: 'Max number of results, defaults to 1,000'
+        }) }}
+
+        <input type="submit" class="btn submit" value="{{ 'Save'|t('commerce') }}">
+    </form>
+{% endblock %}

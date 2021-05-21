@@ -1,0 +1,307 @@
+{% extends "_layouts/basecp" %}
+{% import "_includes/forms" as forms %}
+{% set title = "Login"|t('app') %}
+{% set bodyClass = 'login' %}
+{% do view.registerAssetBundle("craft\\web\\assets\\login\\LoginAsset") %}
+{% do view.registerTranslations('app', [
+    "Reset Password",
+    "Check your email for instructions to reset your password.",
+]) %}
+
+{% set username = (craft.app.config.general.rememberUsernameDuration ? craft.app.user.getRememberedUsername(): '') %}
+
+{% if craft.app.config.general.useEmailAsUsername %}
+    {% set usernamePlaceholder = 'Email'|t('app') %}
+    {% set usernameType = 'email' %}
+{% else %}
+    {% set usernamePlaceholder = 'Username or Email'|t('app') %}
+    {% set usernameType = 'text' %}
+{% endif %}
+
+{% set cpAssetUrl = view.getAssetManager().getPublishedUrl('@app/web/assets/cp/dist', true) %}
+
+{% block body %}
+    <style>
+        @charset "UTF-8";
+        @import "../../../../../node_modules/craftcms-sass/mixins";
+
+        html, body {
+          height: 100%;
+        }
+
+        body {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+
+        #login-form {
+          display: block;
+          width: 300px;
+          background: no-repeat center top;
+        }
+
+        #login-form.has-logo {
+          padding-top: 116px;
+        }
+
+        #login-form h1 {
+          text-align: center;
+          font-size: 3em;
+          color: $textColor;
+          word-wrap: break-word;
+        }
+
+        #login-fields {
+          position: relative;
+          padding: 1px;
+
+          &:after {
+            position: absolute;
+            z-index: 1;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            display: block;
+            content: '.';
+            font-size: 0;
+            @include input-styles;
+            background-color: transparent;
+            border-color: transparent;
+            user-select: none;
+            pointer-events: none;
+          }
+
+          .text {
+            box-shadow: none;
+          }
+        }
+
+        #login-form .field {
+          margin: 0;
+        }
+
+        #login-form .btn {
+          display: block;
+        }
+
+        .passwordwrapper .password-toggle {
+          z-index: 1;
+        }
+
+        #loginName {
+          margin: -1px -1px 0;
+          width: calc(100% + 2px);
+          padding: 14px 16px;
+          border-radius: $largeBorderRadius $largeBorderRadius 0 0;
+          border-bottom-width: 0;
+
+          &:focus {
+            border-bottom-width: 1px;
+            margin-bottom: -1px;
+          }
+        }
+
+        #login-form.reset-password #loginName {
+          border-bottom-left-radius: $largeBorderRadius;
+          border-bottom-right-radius: $largeBorderRadius;
+        }
+
+        .passwordwrapper {
+          margin: 0 -1px -1px;
+          border-radius: 0 0 $largeBorderRadius $largeBorderRadius;
+
+          #password {
+            @include padding(14px, 7px, 14px, 16px);
+          }
+
+          .password-toggle {
+            @include padding-right(14px);
+          }
+        }
+
+        #password-fields {
+          margin-top: 24px;
+          display: flex;
+          justify-content: space-between;
+        }
+
+        #rememberMe-field {
+          @include margin-right(14px);
+        }
+
+        #forgot-password {
+          position: relative;
+          z-index: 1;
+          display: block;
+          font-style: normal;
+          font-size: 11px;
+          color: $mediumTextColor;
+
+          &:only-child {
+            width: 100%;
+            text-align: center;
+            margin-top: -20px;
+          }
+        }
+
+        #forgot-password:hover {
+          color: $linkColor;
+          text-decoration: none;
+        }
+
+        #login-form .buttons {
+          position: relative;
+          text-align: center;
+        }
+
+        #login-form #ssl-icon {
+          position: absolute;
+          top: 0;
+          @include left(0);
+          z-index: 1;
+          line-height: 30px;
+          width: 2.2em;
+          color: $white;
+          text-align: center;
+          cursor: pointer;
+        }
+
+        #login-form #ssl-icon.disabled {
+          opacity: 0.75;
+          cursor: default;
+        }
+
+        #login-form #ssl-icon + #submit {
+          @include padding-left(2em);
+        }
+
+        #login-form .submit {
+          display: block;
+          float: none;
+          padding: 14px 16px;
+          height: auto;
+          width: 100%;
+          border-radius: 4px;
+        }
+
+        #spinner {
+          position: absolute;
+          top: 58px;
+          left: 50%;
+          margin-left: -12px;
+        }
+
+        p.error {
+          text-align: center;
+        }
+
+        #poweredby {
+          display: block;
+          text-align: center;
+          margin-top: 70px;
+          margin-bottom: 48px;
+          opacity: .6;
+        }
+
+        #poweredby:hover {
+          opacity: 0.8;
+        }
+
+        #poweredby:active {
+          opacity: 1;
+        }
+
+        .modal.email-sent {
+          width: 300px;
+        }
+
+        .modal.email-sent .body {
+          @include padding-left(68px);
+        }
+
+        .modal.email-sent .body:before {
+          @include icon;
+          display: block;
+          position: absolute;
+          top: 24px;
+          @include left(24px);
+          content: 'mail';
+          font-size: 30px;
+          color: $linkColor;
+        }
+
+        @media only screen and (-webkit-min-device-pixel-ratio: 1.5),
+        only screen and (-moz-min-device-pixel-ratio: 1.5),
+        only screen and (-o-min-device-pixel-ratio: 3/2),
+        only screen and (min-device-pixel-ratio: 1.5),
+        only screen and (min-resolution: 1.5dppx) {
+          #login-form {
+            background-size: 202px;
+          }
+        }
+    </style>
+
+    <script type="text/javascript">
+        var cookieTest = 'CraftCookieTest='+Math.floor(Math.random() * 1000000);
+        document.cookie = cookieTest;
+        var cookiesEnabled = document.cookie.search(cookieTest) != -1;
+        if (cookiesEnabled)
+        {
+            document.cookie = cookieTest + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+
+            document.write(
+                    '{%- set hasLogo = (CraftEdition == CraftPro and craft.rebrand.isLogoUploaded ? true : false) -%}'+
+                    '<form id="login-form" method="post" accept-charset="UTF-8" {% if hasLogo -%}
+            {%- set logo = craft.rebrand.logo -%}
+            {%- set padding = logo.height + 30 -%}
+        class="has-logo" style="background-image: url(\'{{ logo.url|e('css')|e('js') }}\'); background-size: {{ logo.width }}px {{ logo.height }}px; padding-top: {{ padding }}px;"
+                {%- endif %}>' +
+            '{% if not hasLogo -%}<h1>{{ systemName }}</h1>{%- endif %}'+
+            '<div id="login-fields">' +
+            "{{ forms.textField({ id: 'loginName', name: 'username', placeholder: usernamePlaceholder, value: username, autocomplete: 'username', type: usernameType })|e('js') }}" +
+            "{{ forms.passwordField({ id: 'password', name: 'password', placeholder: 'Password'|t('app'), autocomplete: 'current-password' })|e('js') }}" +
+            '</div>' +
+            '<div id="password-fields">' +
+            {% if craft.app.config.general.rememberedUserSessionDuration %}
+            '{{ forms.checkboxField({ id: "rememberMe", label: "Keep me logged in"|t('app') })|e("js") }}' +
+            {% endif %}
+            '<a id="forgot-password">{{ "Forgot your password?"|t('app') }}</a>' +
+            '</div>' +
+
+            '<div class="buttons">' +
+            '{# <div id="ssl-icon" class="disabled"><div class="{{ craft.app.request.getIsSecureConnection() ? "secure" : "insecure" }} icon"></div></div>#}' +
+            '<input id="submit" class="btn submit disabled" type="submit" value="{{ "Login"|t('app') }}">' +
+            '<div id="spinner" class="spinner hidden"></div>' +
+            '</div>' +
+
+            {% if provider %}
+
+            '<div class="buttons">'+
+            '<a href="{{ provider.url }}" class="btn submit">Via {{ provider.label }}</a>'+
+            '</div>'+
+
+            {% endif %}
+
+            '<a id="poweredby" href="http://craftcms.com/" title="{{ "Powered by Craft CMS"|t('app') }}"><img src="{{ cpAssetUrl }}/images/craftcms.svg" /></a>'+
+            '</form>'
+        );
+
+            {% if not craft.app.request.isMobileBrowser(true) %}
+            document.getElementById("{{ (username ? 'password' : 'loginName') }}").focus();
+            {% endif %}
+        }
+        else
+        {
+            document.write(
+                '<div class="message-container no-access">' +
+                    '<div class="pane notice">' +
+                        '<p>{{ "Cookies must be enabled to access the Craft CMS control panel."|t('app') }}</p>' +
+                    '</div>' +
+                '</div>'
+            );
+        }
+    </script>
+{% endblock %}
