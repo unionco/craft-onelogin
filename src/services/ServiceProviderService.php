@@ -12,7 +12,7 @@ class ServiceProviderService extends Component
     /** @var Auth|null */
     private $auth;
 
-    public function init()
+    public function init() : void
     {
         $settings = OneLogin::$plugin->getSettings()->samlSettings ?? [];
         $samlSettings = new SAMLSettings($settings);

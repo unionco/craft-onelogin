@@ -4,6 +4,7 @@ namespace unionco\onelogin\models;
 
 use Craft;
 use craft\base\Model;
+use craft\helpers\App;
 use unionco\onelogin\models\SAMLSettings;
 
 class Settings extends Model
@@ -34,47 +35,47 @@ class Settings extends Model
     /**
      * @inheritdoc
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            [['clientId', 'clientSecret', 'ssoPortalUrl',], 'required'],
+            // [['clientId', 'clientSecret', 'ssoPortalUrl',], 'required'],
         ];
     }
 
     /**
      * Get the value of clientId
-     */ 
+     */
     public function getClientId(): string
     {
-        return (string) Craft::parseEnv($this->clientId);
+        return (string) App::parseEnv($this->clientId);
     }
 
     /**
      * Get the value of clientSecret
-     */ 
+     */
     public function getClientSecret(): string
     {
-        return (string) Craft::parseEnv($this->clientSecret);
+        return (string) App::parseEnv($this->clientSecret);
     }
 
     /**
      * Get the value of region
-     */ 
+     */
     public function getRegion(): string
     {
-        return (string) Craft::parseEnv($this->region);
+        return (string) App::parseEnv($this->region);
     }
 
     /**
      * Get the value of maxResults
-     */ 
+     */
     public function getMaxResults(): int
     {
-        return (int) Craft::parseEnv($this->maxResults);
+        return (int) App::parseEnv($this->maxResults);
     }
 
     public function getSsoPortalUrl(): string
     {
-        return (string) Craft::parseEnv($this->ssoPortalUrl);
+        return (string) App::parseEnv($this->ssoPortalUrl);
     }
 }

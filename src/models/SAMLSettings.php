@@ -2,14 +2,16 @@
 
 namespace unionco\onelogin\models;
 
-use craft\base\Model;
 use Craft;
-use yii\base\InvalidConfigException;
+use craft\base\Model;
+use craft\helpers\App;
+// use OneLogin\Saml2\Constants as OneLoginConstants;
+// use yii\base\InvalidConfigException;
 
 class SAMLSettings extends Model
 {
     /** @var bool Debug Mode */
-    public $debug = false;
+    public $debug = true;
 
     /** @var string Local Onelogin base URL */
     public $baseUrl;
@@ -38,14 +40,14 @@ class SAMLSettings extends Model
     /** @var string Identity Provider | X.509 Certificate filepath or cert contents*/
     public $idpX509Cert;
 
-    public function rules()
+    public function rules(): array
     {
         return [
-            [[
-                'baseUrl',
-                'spEntityId', 'spAcsUrl', 'spSloUrl',
-                'idpEntityId', 'idpSsoUrl', 'idpSloUrl', 'idpX509Cert',
-            ], 'required'],
+            // [[
+            //     'baseUrl',
+            //     'spEntityId', 'spAcsUrl', 'spSloUrl',
+            //     'idpEntityId', 'idpSsoUrl', 'idpSloUrl', 'idpX509Cert',
+            // ], 'required'],
             ['spEntityId', 'string'],
             ['baseUrl', 'string'],
             ['spAcsUrl', 'string'],
@@ -60,7 +62,7 @@ class SAMLSettings extends Model
 
     public function getBaseUrl()
     {
-        return Craft::parseEnv($this->baseUrl);
+        return App::parseEnv($this->baseUrl);
     }
 
     public function getSpAttributes()
@@ -68,7 +70,8 @@ class SAMLSettings extends Model
         return [
             [
                 'name' => 'loginName',
-                'isRequired' => true,
+                // 'isRequired' => true,
+                'isRequired' => false,
                 'nameFormat' => 'string',
                 'friendlyName' => 'loginName',
                 'attributeValue' => '',
@@ -78,42 +81,42 @@ class SAMLSettings extends Model
 
     public function getSpEntityId()
     {
-        return Craft::parseEnv($this->spEntityId);
+        return App::parseEnv($this->spEntityId);
     }
 
     public function getSpAcsUrl()
     {
-        return Craft::parseEnv($this->spAcsUrl);
+        return App::parseEnv($this->spAcsUrl);
     }
 
     // public function getIdpSsoUrl()
     // {
-    //     return Craft::parseEnv($this->idpSsoUrl);
+    //     return App::parseEnv($this->idpSsoUrl);
     // }
 
     public function getSpSloUrl()
     {
-        return Craft::parseEnv($this->spSloUrl);
+        return App::parseEnv($this->spSloUrl);
     }
 
     public function getIdpEntityId()
     {
-        return Craft::parseEnv($this->idpEntityId);
+        return App::parseEnv($this->idpEntityId);
     }
 
     public function getIdpSsoUrl()
     {
-        return Craft::parseEnv($this->idpSsoUrl);
+        return App::parseEnv($this->idpSsoUrl);
     }
 
     public function getIdpSloUrl()
     {
-        return Craft::parseEnv($this->idpSloUrl);
+        return App::parseEnv($this->idpSloUrl);
     }
 
     public function getIdpX509Cert()
     {
-        $certFilePath = Craft::parseEnv($this->idpX509Cert);
+        $certFilePath = App::parseEnv($this->idpX509Cert);
 
         $cert = null;
         if ($this->idpX509Cert && file_exists($certFilePath)) {
@@ -170,6 +173,10 @@ class SAMLSettings extends Model
 
     public function getSettingsArray(): array
     {
+        // https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf
+        // https://docs.oasis-open.org/security/saml/v2.0/saml-authn-context-2.0-os.pdf
+        // https://learn.microsoft.com/en-us/azure/active-directory/develop/single-sign-on-saml-protocol
+
         return [
             // If 'strict' is True, then the PHP Toolkit will reject unsigned
             // or unencrypted messages if it expects them signed or encrypted
@@ -187,6 +194,43 @@ class SAMLSettings extends Model
             'baseurl' => $this->getBaseUrl(),
 
             // Service Provider Data that we are deploying
+            'security' => [
+                // exact	(Default) Must be the exact match of at least one of the authentication contexts specified.
+                // minimum	Must be at least as strong (as deemed by the responder) as one of the authentication contexts specified.
+                // maximum	Must be as strong as possible (as deemed by the responder) without exceeding the strength of at least one of the authentication contexts specified.
+                // better	Must be stronger (as deemed by the responder) than any one of the authentication contexts specified.
+                // Not Specified	Uses the default value EXACT.
+                // 'requestedAuthnContextComparison' => 'minimum',
+
+                'requestedAuthnContext' => [
+                    'urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:Password',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:InternetProtocol',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:X509',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:Kerberos',
+                    // 'urn:federation:authentication:windows',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:TimeSyncToken',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorUnregistered',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:InternetProtocolPassword',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:SecureRemotePassword',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:MobileOneFactorContract',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:MobileOneFactorUnregistered',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:PreviousSession',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:PGP',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:SPKI',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:XMLDSig',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:SoftwarePKI',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:Telephony',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:NomadTelephony',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:PersonalTelephony',
+                    // 'urn:oasis:names:tc:SAML:2.0:ac:classes:AuthenticatedTelephony',
+                ],
+            ],
             'sp' => [
                 // Identifier of the SP entity  (must be a URI)
                 'entityId' => $this->getSpEntityId(),
@@ -222,6 +266,7 @@ class SAMLSettings extends Model
                 // represent the requested subject.
                 // Take a look on lib/Saml2/Constants.php to see the NameIdFormat supported
                 'NameIDFormat' => 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified',
+                // 'requestedAuthnContext' => false,
 
                 // Usually x509cert and privateKey of the SP are provided by files placed at
                 // the certs folder. But we can also provide them with the following parameters

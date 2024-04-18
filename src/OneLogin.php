@@ -3,6 +3,7 @@
 namespace unionco\onelogin;
 
 use Craft;
+use craft\base\Model;
 use yii\base\Event;
 use craft\base\Plugin;
 use craft\web\UrlManager;
@@ -20,9 +21,9 @@ class OneLogin extends Plugin
     public static $plugin = null;
 
     /** @var string */
-    public $schemaVersion = '0.0.1';
+    public string $schemaVersion = '0.0.1';
 
-    public $hasCpSettings = true;
+    public bool $hasCpSettings = true;
 
     /**
      * @inheritdoc.
@@ -66,7 +67,7 @@ class OneLogin extends Plugin
     /**
      * @inheritdoc
      */
-    protected function createSettingsModel()
+    protected function createSettingsModel(): ?Model
     {
         return new Settings();
     }
@@ -84,7 +85,7 @@ class OneLogin extends Plugin
     //             ]
     //         );
     // }
-    public function getSettingsResponse()
+    public function getSettingsResponse(): mixed
     {
         return Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('onelogin/settings/saml'));
     }
