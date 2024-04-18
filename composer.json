@@ -11,21 +11,33 @@
   ],
   "minimum-stability": "stable",
   "require": {
-    "craftcms/cms": "^3.2.0",
-    "onelogin/api": "^1.6",
+    "craftcms/cms": "^4.0",
+    "onelogin/api": "dev-master#1.7.1",
     "onelogin/php-saml": "^3||^4"
   },
+  "require-dev": {
+    "vimeo/psalm": "^5.0"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/unionco/onelogin-php-sdk.git"
+    }
+  ],
   "autoload": {
     "psr-4": {
       "unionco\\onelogin\\": "src/"
     }
   },
-  "require-dev": {
-    "vimeo/psalm": "^3.0"
-  },
   "extra": {
     "name": "OneLogin",
     "handle": "onelogin",
     "class": "unionco\\onelogin\\OneLogin"
+  },
+  "config": {
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true,
+      "craftcms/plugin-installer": true
+    }
   }
 }
